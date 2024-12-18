@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B00FF"
+    tools:context=".BlueFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/blue_fragment_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#004EFF"
+        android:gravity="center"
+        android:text="@string/hello_blank_fragment"
+        android:textColor="#F9F5F5"
+        android:textColorLink="#DDF6F2F2" />
+
+</FrameLayout>

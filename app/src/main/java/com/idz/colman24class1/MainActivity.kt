@@ -8,8 +8,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
+
+    var fragmentOne: StudentsListFragment? = null
+    var fragmentTwo: BlueFragment? = null
+    var fragmentThree: BlueFragment? = null
+    var fragmentFour: BlueFragment? = null
+
+    var buttonOne: Button? = null
+    var buttonTwo: Button? = null
+    var buttonThree: Button? = null
+    var buttonFour: Button? = null
+
+    var fragment: BlueFragment? = null
+    var inDisplayFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,31 +37,69 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // TODO: 1. Button to navigate to Add Student ✅
-        // TODO: 2. Create a button listener
-        // TODO: 3. Create an intent
+        // TODO: 1 - Set MainActivity Launcher ✅
+        // TODO: 2 - Create fragment from xml ✅
+        // TODO: 3 - Create a fragment programmatically ✅
+        // TODO: 4 - Manage nav args ✅
+        // TODO: 5 - Create a tab bar with multiple fragments ✅
+        // TODO: 6 - Refactor students list
+        // TODO: 7 - GPS
 
-        val addStudentButton: Button = findViewById(R.id.main_activity_add_student_button)
 
-//        class MyListener: View.OnClickListener {
-//            override fun onClick(v: View?) {
-//                TODO("Not yet implemented")
-//            }
-//        }
-//
-//        val listener = MyListener()
-//        addStudentButton.setOnClickListener(listener)
 
-//        addStudentButton.setOnClickListener(object : View.OnClickListener {
-//            override fun onClick(v: View?) {
-//                TODO("Not yet implemented")
-//            }
-//        })
+        fragmentOne = StudentsListFragment()
+        fragmentTwo = BlueFragment.newInstance("2️⃣")
+        fragmentThree = BlueFragment.newInstance("3️⃣")
+        fragmentFour = BlueFragment.newInstance("4️⃣")
 
-        addStudentButton.setOnClickListener {
+        buttonOne = findViewById(R.id.main_acitivity_button_one)
+        buttonTwo = findViewById(R.id.main_acitivity_button_two)
+        buttonThree = findViewById(R.id.main_acitivity_button_three)
+        buttonFour = findViewById(R.id.main_acitivity_button_four)
 
-            val intent = Intent(this, AddStudentActivity::class.java)
-            startActivity(intent)
+        buttonOne?.setOnClickListener {
+            addFragment(fragmentOne)
         }
+
+        buttonTwo?.setOnClickListener {
+            addFragment(fragmentTwo)
+        }
+
+        buttonThree?.setOnClickListener {
+            addFragment(fragmentThree)
+        }
+
+        buttonFour?.setOnClickListener {
+            addFragment(fragmentFour)
+        }
+
+        addFragment(fragmentOne)
+
+    }
+
+    fun addFragment(fragment: Fragment?) {
+        fragment?.let {
+            supportFragmentManager.beginTransaction().apply {
+                add(R.id.main_activity_frame_layout, it)
+
+                inDisplayFragment?.let {
+                    remove(it)
+                }
+
+                addToBackStack("TAG")
+                commit()
+            }
+        }
+        inDisplayFragment = fragment
+    }
+
+    fun removeFragment() {
+        fragment?.let {
+            supportFragmentManager.beginTransaction().apply {
+                remove(it)
+                commit()
+            }
+        }
+        fragment = null
     }
 }
