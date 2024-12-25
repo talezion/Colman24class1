@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // TODO: 1 - Set up project for nav graphs
+        // TODO: 1 - Set up project for nav graphs ✅
         // TODO: 2 - Set up nav_graph.xml and add Destinations
         // TODO: 3 - Set up MainActivity with nav host and nav controller
         // TODO: 4 -

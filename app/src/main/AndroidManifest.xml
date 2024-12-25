@@ -21,12 +21,6 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".AddStudentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddStudentAcivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
