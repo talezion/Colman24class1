@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,10 +32,6 @@ class MainActivity : AppCompatActivity() {
         // TODO: 1 - Set up project for nav graphs ✅
         // TODO: 2 - Set up nav_graph.xml and add Destinations ✅
         // TODO: 3 - Set up MainActivity with nav host and nav controller ✅
-        // TODO: 4 -
-        // TODO: 5 -
-        // TODO: 6 -
-        // TODO: 7 -
 
         val toolBar: Toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolBar)
@@ -47,6 +44,10 @@ class MainActivity : AppCompatActivity() {
                 navController = it
             )
         }
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_bar)
+        navController?.let { NavigationUI.setupWithNavController(bottomNavigationView, it) }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
