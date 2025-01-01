@@ -1,6 +1,7 @@
 package com.idz.colman24class1
 
 import android.os.Bundle
+import android.view.Display.Mode
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,6 +12,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.navigation.Navigation
+import com.idz.colman24class1.model.Model
+import com.idz.colman24class1.model.Student
 
 class AddStudentFragment : Fragment() {
 
@@ -44,7 +47,17 @@ class AddStudentFragment : Fragment() {
 
 
     private fun onSaveClicked(view: View) {
-        savedTextField?.text = "${nameTextField?.text} ${idTextField?.text} is saved...!!!"
+
+        val student = Student(
+            id = idTextField?.text?.toString() ?: "",
+            name = nameTextField?.text?.toString() ?: "",
+            avatarUrl = "",
+            isChecked = false
+        )
+
+        Model.shared.add(student) {
+            Navigation.findNavController(view).popBackStack()
+        }
     }
 
     private fun setupView(view: View?) {

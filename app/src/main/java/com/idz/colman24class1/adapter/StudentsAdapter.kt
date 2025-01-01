@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.idz.colman24class1.R
 import com.idz.colman24class1.model.Student
 
-class StudentsAdapter(private val students: MutableList<Student>?): BaseAdapter() {
+class StudentsAdapter(private val students: List<Student>?): BaseAdapter() {
 
         override fun getCount(): Int = students?.size ?: 0
 

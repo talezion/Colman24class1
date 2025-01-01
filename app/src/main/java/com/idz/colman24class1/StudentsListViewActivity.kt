@@ -19,7 +19,7 @@ import com.idz.colman24class1.model.Student
 
 class StudentsListViewActivity : AppCompatActivity() {
 
-    var students: MutableList<Student>? = null
+    var students: List<Student>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,13 +35,14 @@ class StudentsListViewActivity : AppCompatActivity() {
         // TODO: 2. Set LAUNCHER
         // TODO: 3. Set layout in xml
         // TODO: 4. Implement adapter
-        students = Model.shared.students
 
-        val listView: ListView = findViewById(R.id.students_list_view)
-        listView.adapter = StudentsAdapter(students)
-
-        listView.setOnItemClickListener { parent, view, position, id ->
-            Log.d("TAG", "A new row click on cell index: $position")
-        }
+//        students = Model.shared.students
+//
+//        val listView: ListView = findViewById(R.id.students_list_view)
+//        listView.adapter = StudentsAdapter(students)
+//
+//        listView.setOnItemClickListener { parent, view, position, id ->
+//            Log.d("TAG", "A new row click on cell index: $position")
+//        }
     }
 }

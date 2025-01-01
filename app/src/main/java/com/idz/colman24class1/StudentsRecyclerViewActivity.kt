@@ -24,7 +24,7 @@ interface OnItemClickListener {
 
 class StudentsRecyclerViewActivity : AppCompatActivity() {
 
-    var students: MutableList<Student>? = null
+    var students: List<Student>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,24 +40,24 @@ class StudentsRecyclerViewActivity : AppCompatActivity() {
         // TODO: 2. Add Adapter
         // TODO: 3. Add ViewHolder
 
-        students = Model.shared.students
-
-        val recyclerView: RecyclerView = findViewById(R.id.students_recycler_view)
-        recyclerView.setHasFixedSize(true)
-
-        val layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
-
-        val adapter = StudentsRecyclerAdapter(students)
-        adapter.listener = object : OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                Log.d("TAG", "On click Activity listener on position $position")
-            }
-
-            override fun onItemClick(student: Student?) {
-                Log.d("TAG", "On student clicked name: ${student?.name}")
-            }
-        }
-        recyclerView.adapter = adapter
+//        students = Model.shared.students
+//
+//        val recyclerView: RecyclerView = findViewById(R.id.students_recycler_view)
+//        recyclerView.setHasFixedSize(true)
+//
+//        val layoutManager = LinearLayoutManager(this)
+//        recyclerView.layoutManager = layoutManager
+//
+//        val adapter = StudentsRecyclerAdapter(students)
+//        adapter.listener = object : OnItemClickListener {
+//            override fun onItemClick(position: Int) {
+//                Log.d("TAG", "On click Activity listener on position $position")
+//            }
+//
+//            override fun onItemClick(student: Student?) {
+//                Log.d("TAG", "On student clicked name: ${student?.name}")
+//            }
+//        }
+//        recyclerView.adapter = adapter
     }
 }
