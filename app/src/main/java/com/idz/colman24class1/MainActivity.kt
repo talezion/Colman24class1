@@ -1,5 +1,6 @@
 package com.idz.colman24class1
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         // TODO: 3 - Set up MainActivity with nav host and nav controller ✅
 
         val toolBar: Toolbar = findViewById(R.id.main_toolbar)
+        toolBar.setBackgroundColor(Color.parseColor("#333333"))
         setSupportActionBar(toolBar)
 
         val navHostController: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.main_nav_host) as? NavHostFragment
@@ -47,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_bar)
         navController?.let { NavigationUI.setupWithNavController(bottomNavigationView, it) }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
