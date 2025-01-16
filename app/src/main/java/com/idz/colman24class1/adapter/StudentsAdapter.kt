@@ -25,7 +25,7 @@ class StudentsAdapter(private val students: List<Student>?): BaseAdapter() {
 //            val view = convertView ?: inflator.inflate(R.layout.student_list_row, parent, false)
 
             val view = convertView ?: inflator.inflate(R.layout.student_list_row, parent, false).apply {
-                findViewById<CheckBox>(R.id.student_row_check_box).apply {
+                findViewById<CheckBox>(R.id.checkBox).apply {
                     setOnClickListener {
                         (tag as? Int)?.let { tag ->
                             val student = students?.get(tag)
@@ -53,9 +53,9 @@ class StudentsAdapter(private val students: List<Student>?): BaseAdapter() {
 
             val student = students?.get(position)
 
-            val nameTextView: TextView? = view?.findViewById(R.id.student_row_name_text_view)
-            val idTextView: TextView? = view?.findViewById(R.id.student_row_id_text_view)
-            val studentCheckBox: CheckBox? = view?.findViewById(R.id.student_row_check_box)
+            val nameTextView: TextView? = view?.findViewById(R.id.nameTextView)
+            val idTextView: TextView? = view?.findViewById(R.id.idTextView)
+            val studentCheckBox: CheckBox? = view?.findViewById(R.id.checkBox)
 
             nameTextView?.text = student?.name
             idTextView?.text = student?.id

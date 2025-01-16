@@ -1,30 +1,23 @@
 package com.idz.colman24class1.adapter
 
 import android.util.Log
-import android.view.View
 import android.widget.CheckBox
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.idz.colman24class1.OnItemClickListener
 import com.idz.colman24class1.R
+import com.idz.colman24class1.databinding.StudentListRowBinding
 import com.idz.colman24class1.model.Student
+import com.squareup.picasso.Picasso
 
 class StudentViewHolder(
-    itemView: View,
+    private val binding: StudentListRowBinding,
     listener: OnItemClickListener?
-    ): RecyclerView.ViewHolder(itemView) {
+    ): RecyclerView.ViewHolder(binding.root) {
 
-        private var nameTextView: TextView? = null
-        private var idTextView: TextView? = null
-        private var studentCheckBox: CheckBox? = null
         private var student: Student? = null
 
         init {
-            nameTextView = itemView.findViewById(R.id.student_row_name_text_view)
-            idTextView = itemView.findViewById(R.id.student_row_id_text_view)
-            studentCheckBox = itemView.findViewById(R.id.student_row_check_box)
-
-            studentCheckBox?.apply {
+            binding.checkBox.apply {
                     setOnClickListener {
                         (tag as? Int)?.let { tag ->
                             student?.isChecked = (it as? CheckBox)?.isChecked ?: false
@@ -41,12 +34,22 @@ class StudentViewHolder(
 
         fun bind(student: Student?, position: Int) {
             this.student = student
-            nameTextView?.text = student?.name
-            idTextView?.text = student?.id
+            binding.nameTextView.text = student?.name
+            binding.idTextView.text = student?.id
 
-            studentCheckBox?.apply {
+            binding.checkBox.apply {
                 isChecked = student?.isChecked ?: false
                 tag = position
+            }
+
+            student?.avatarUrl?.let {
+                if (it.isNotBlank()) {
+                    Picasso.get()
+                        .load(it)
+                        .placeholder(R.drawable.avatar)
+                        .into(binding.imageView)
+                }
+
             }
         }
     }

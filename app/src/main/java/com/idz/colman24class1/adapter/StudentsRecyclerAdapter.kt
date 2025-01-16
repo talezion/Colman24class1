@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.idz.colman24class1.OnItemClickListener
 import com.idz.colman24class1.R
+import com.idz.colman24class1.databinding.StudentListRowBinding
 import com.idz.colman24class1.model.Student
 
 class StudentsRecyclerAdapter(private var students: List<Student>?): RecyclerView.Adapter<StudentViewHolder>() {
@@ -18,12 +19,9 @@ class StudentsRecyclerAdapter(private var students: List<Student>?): RecyclerVie
         override fun getItemCount(): Int = students?.size ?: 0
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-            val itemView = LayoutInflater.from(parent.context).inflate(
-                R.layout.student_list_row,
-                parent,
-                false
-            )
-            return StudentViewHolder(itemView, listener)
+            val inflator = LayoutInflater.from(parent.context)
+            val binding = StudentListRowBinding.inflate(inflator, parent, false)
+            return StudentViewHolder(binding, listener)
         }
 
         override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {

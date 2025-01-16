@@ -1,5 +1,6 @@
 package com.idz.colman24class1.model
 
+import android.graphics.Bitmap
 import android.os.Looper
 import androidx.core.os.HandlerCompat
 import com.idz.colman24class1.base.EmptyCallback
@@ -18,54 +19,80 @@ import java.util.concurrent.Executors
 
 class Model private constructor() {
 
-    private val database: AppLocalDbRepository = AppLocalDb.database
-    private val executer = Executors.newSingleThreadExecutor()
-    private var mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
+    enum class Storage {
+        FIREBASE,
+        CLOUDINARY
+    }
 
     private val firebaseModel = FirebaseModel()
-
+    private val cloudinaryModel = CloudinaryModel()
     companion object {
         val shared = Model()
     }
 
     fun getAllStudents(callback: StudentsCallback) {
         firebaseModel.getAllStudents(callback)
-
-//        executer.execute {
-//            val students = database.studentDao().getAllStudent()
-//
-//            Thread.sleep(4000)
-//
-//            mainHandler.post {
-//                callback(students)
-//            }
-//        }
     }
 
-    fun add(student: Student, callback: EmptyCallback) {
-        firebaseModel.add(student, callback)
+    fun add(student: Student, image: Bitmap?, storage: Storage, callback: EmptyCallback) {
+        firebaseModel.add(student) {
+            image?.let {
+                uploadTo(
+                    storage,
+                    image = image,
+                    name = student.id,
+                    callback = { uri ->
+                        if (!uri.isNullOrBlank()) {
+                            val st = student.copy(avatarUrl = uri)
+                            firebaseModel.add(st, callback)
+                        } else {
+                            callback()
+                        }
+                    },
+                )
+            } ?: callback()
+        }
+    }
 
-//        executer.execute {
-//            database.studentDao().insertAll(student)
-//
-//            Thread.sleep(4000)
-//
-//            mainHandler.post {
-//                callback()
-//            }
-//        }
+    private fun uploadTo(storage: Storage, image: Bitmap, name: String, callback: (String?) -> Unit) {
+        when (storage) {
+            Storage.FIREBASE -> {
+                uploadImageToFirebase(image, name, callback)
+            }
+            Storage.CLOUDINARY -> {
+                uploadImageToCloudinary(
+                    bitmap = image,
+                    name = name,
+                    onSuccess = callback,
+                    onError = { callback(null) }
+                )
+            }
+        }
     }
 
     fun delete(student: Student, callback: EmptyCallback) {
         firebaseModel.delete(student, callback)
-//        executer.execute {
-//            database.studentDao().delete(student)
-//
-//            Thread.sleep(4000)
-//
-//            mainHandler.post {
-//                callback()
-//            }
-//        }
+    }
+
+    private fun uploadImageToFirebase(
+        image: Bitmap,
+        name: String,
+        callback: (String?) -> Unit
+    ) {
+        firebaseModel.uploadImage(image, name, callback)
+    }
+
+    private fun uploadImageToCloudinary(
+        bitmap: Bitmap,
+        name: String,
+        onSuccess: (String?) -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        cloudinaryModel.uploadImage(
+            bitmap = bitmap,
+            name = name,
+            onSuccess = onSuccess,
+            onError = onError
+        )
     }
 }
