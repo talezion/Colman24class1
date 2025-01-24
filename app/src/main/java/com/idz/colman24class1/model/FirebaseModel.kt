@@ -1,6 +1,7 @@
 package com.idz.colman24class1.model
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.firebase.firestore.firestoreSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.memoryCacheSettings
@@ -9,6 +10,7 @@ import com.google.firebase.storage.ktx.storage
 import com.idz.colman24class1.base.Constants
 import com.idz.colman24class1.base.EmptyCallback
 import com.idz.colman24class1.base.StudentsCallback
+import com.idz.colman24class1.utils.extensions.toFirebaseTimestamp
 import java.io.ByteArrayOutputStream
 
 class FirebaseModel {
@@ -24,25 +26,34 @@ class FirebaseModel {
         database.firestoreSettings = settings
     }
 
-    fun getAllStudents(callback: StudentsCallback) {
-        database.collection(Constants.Collections.STUDENTS).get().addOnCompleteListener {
-            when (it.isSuccessful) {
-                true -> {
-                    val students: MutableList<Student> = mutableListOf()
-                    for (json in it.result) {
-                        students.add(Student.fromJSON(json.data))
+    fun getAllStudents(sinceLastUpdated: Long, callback: StudentsCallback) {
+
+        database.collection(Constants.Collections.STUDENTS)
+            .whereGreaterThanOrEqualTo(Student.LAST_UPDATED, sinceLastUpdated.toFirebaseTimestamp)
+            .get()
+            .addOnCompleteListener {
+                when (it.isSuccessful) {
+                    true -> {
+                        val students: MutableList<Student> = mutableListOf()
+                        for (json in it.result) {
+                            students.add(Student.fromJSON(json.data))
+                        }
+                        Log.d("TAG", students.size.toString())
+                        callback(students)
                     }
-                    callback(students)
+
+                    false -> callback(listOf())
                 }
-                false -> callback(listOf())
             }
-        }
     }
 
     fun add(student: Student, callback: EmptyCallback) {
         database.collection(Constants.Collections.STUDENTS).document(student.id).set(student.json)
             .addOnCompleteListener {
                 callback()
+            }
+            .addOnFailureListener {
+                Log.d("TAG", it.toString() + it.message)
             }
     }
 

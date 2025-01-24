@@ -6,10 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.idz.colman24class1.adapter.StudentsRecyclerAdapter
 import com.idz.colman24class1.databinding.FragmentStudentsListBinding
 import com.idz.colman24class1.model.Model
@@ -19,9 +18,8 @@ import com.idz.colman24class1.model.Student
 class StudentsListFragment : Fragment() {
 
     private var binding: FragmentStudentsListBinding? = null
-
-    var students: List<Student>? = null
-    var adapter: StudentsRecyclerAdapter? = null
+    private var adapter: StudentsRecyclerAdapter? = null
+    private var viewModel: StudentsListViewModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +27,8 @@ class StudentsListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentStudentsListBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(this)[StudentsListViewModel::class.java]
 
         // TODO: Integrate students in fragment ✅
         // TODO: Refactor Model ✅
@@ -39,7 +39,7 @@ class StudentsListFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         binding?.recyclerView?.layoutManager = layoutManager
 
-        adapter = StudentsRecyclerAdapter(students)
+        adapter = StudentsRecyclerAdapter(viewModel?.students)
         adapter?.listener = object : OnItemClickListener {
             override fun onItemClick(position: Int) {
                 Log.d("TAG", "On click Activity listener on position $position")
@@ -78,8 +78,8 @@ class StudentsListFragment : Fragment() {
         binding?.progressBar?.visibility = View.VISIBLE
 
         Model.shared.getAllStudents {
-            students = it
-            adapter?.update(students)
+            viewModel?.students = it
+            adapter?.update(it)
             adapter?.notifyDataSetChanged()
 
             binding?.progressBar?.visibility = View.GONE

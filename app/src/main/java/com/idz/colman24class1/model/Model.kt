@@ -9,14 +9,6 @@ import com.idz.colman24class1.model.dao.AppLocalDb
 import com.idz.colman24class1.model.dao.AppLocalDbRepository
 import java.util.concurrent.Executors
 
-
-/*
-1. Create Firebase model ✅
-2. Set and Get ✅
-3. Integrate Firestore ✅
-4. Integrate Student
- */
-
 class Model private constructor() {
 
     enum class Storage {
@@ -24,14 +16,50 @@ class Model private constructor() {
         CLOUDINARY
     }
 
+
+    private val database: AppLocalDbRepository = AppLocalDb.database
+    private var executor = Executors.newSingleThreadExecutor()
+    private var mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
+
     private val firebaseModel = FirebaseModel()
     private val cloudinaryModel = CloudinaryModel()
     companion object {
         val shared = Model()
     }
 
+
     fun getAllStudents(callback: StudentsCallback) {
-        firebaseModel.getAllStudents(callback)
+
+        /*
+            1. Get local last updates timestamp
+            2. Get all update students from firebase firestore
+            3. Insert updated students to ROOM
+            4. Update last updated time stamp
+            5. Return students list
+             */
+
+        val lastUpdated: Long = Student.lastUpdated
+
+        firebaseModel.getAllStudents(lastUpdated) { students ->
+            executor.execute {
+                var currentTime = lastUpdated
+                for (student in students) {
+                    database.studentDao().insertAll(student)
+                    student.lastUpdated?.let {
+                        if (currentTime < it) {
+                            currentTime = it
+                        }
+                    }
+                }
+
+                Student.lastUpdated = currentTime
+                val savedStudents = database.studentDao().getAllStudent()
+                mainHandler.post {
+                    callback(savedStudents)
+                }
+            }
+
+        }
     }
 
     fun add(student: Student, image: Bitmap?, storage: Storage, callback: EmptyCallback) {

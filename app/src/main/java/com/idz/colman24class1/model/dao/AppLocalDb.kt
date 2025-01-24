@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.idz.colman24class1.base.MyApplication
 import com.idz.colman24class1.model.Student
 
-@Database(entities = [Student::class], version = 2)
+@Database(entities = [Student::class], version = 3)
 abstract class AppLocalDbRepository: RoomDatabase() {
     abstract fun studentDao(): StudentDao
 }
