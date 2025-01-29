@@ -1,5 +1,6 @@
 package com.idz.colman24class1.model.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,7 +12,7 @@ import com.idz.colman24class1.model.Student
 interface StudentDao {
 
     @Query("SELECT * FROM Student")
-    fun getAllStudent(): List<Student>
+    fun getAllStudent(): LiveData<List<Student>>
 
     @Query("SELECT * FROM Student WHERE id =:id")
     fun getStudentById(id: String): Student

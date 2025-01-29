@@ -2,24 +2,35 @@ package com.idz.colman24class1.model
 
 import android.graphics.Bitmap
 import android.os.Looper
+import android.util.Log
 import androidx.core.os.HandlerCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.idz.colman24class1.base.EmptyCallback
 import com.idz.colman24class1.base.StudentsCallback
 import com.idz.colman24class1.model.dao.AppLocalDb
 import com.idz.colman24class1.model.dao.AppLocalDbRepository
+import com.idz.colman24class1.model.networking.MoviesClient
 import java.util.concurrent.Executors
 
 class Model private constructor() {
+
+    enum class LoadingState {
+        LOADING,
+        LOADED
+    }
 
     enum class Storage {
         FIREBASE,
         CLOUDINARY
     }
 
-
     private val database: AppLocalDbRepository = AppLocalDb.database
     private var executor = Executors.newSingleThreadExecutor()
     private var mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
+    val students: LiveData<List<Student>> = database.studentDao().getAllStudent()
+    val loadingState: MutableLiveData<LoadingState> = MutableLiveData<LoadingState>()
+    val movies: MutableLiveData<Movies> = MutableLiveData()
 
     private val firebaseModel = FirebaseModel()
     private val cloudinaryModel = CloudinaryModel()
@@ -27,19 +38,9 @@ class Model private constructor() {
         val shared = Model()
     }
 
-
-    fun getAllStudents(callback: StudentsCallback) {
-
-        /*
-            1. Get local last updates timestamp
-            2. Get all update students from firebase firestore
-            3. Insert updated students to ROOM
-            4. Update last updated time stamp
-            5. Return students list
-             */
-
+    fun refreshAllStudents() {
+        loadingState.postValue(LoadingState.LOADING)
         val lastUpdated: Long = Student.lastUpdated
-
         firebaseModel.getAllStudents(lastUpdated) { students ->
             executor.execute {
                 var currentTime = lastUpdated
@@ -53,12 +54,8 @@ class Model private constructor() {
                 }
 
                 Student.lastUpdated = currentTime
-                val savedStudents = database.studentDao().getAllStudent()
-                mainHandler.post {
-                    callback(savedStudents)
-                }
+                loadingState.postValue(LoadingState.LOADED)
             }
-
         }
     }
 
@@ -123,4 +120,24 @@ class Model private constructor() {
             onError = onError
         )
     }
+
+    fun getPopularMovies() {
+        executor.execute {
+            try {
+                val request = MoviesClient.moviesApiClient.getPopularMovies(page = 1)
+                val response = request.execute()
+
+                if (response.isSuccessful) {
+                    val movies = response.body()
+                    Log.e("TAG", "Fetched movies!.. with total number of movies ${movies?.results?.size ?: 0}")
+                    this.movies.postValue(movies)
+                } else {
+                    Log.e("TAG", "Failed to fetch movies!")
+                }
+            } catch (e: Exception) {
+                Log.e("TAG", "Failed to fetch movies! with excpetio ${e}")
+            }
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +20,8 @@ class StudentsListFragment : Fragment() {
 
     private var binding: FragmentStudentsListBinding? = null
     private var adapter: StudentsRecyclerAdapter? = null
-    private var viewModel: StudentsListViewModel? = null
+
+    private val viewModel: StudentsListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,18 +30,27 @@ class StudentsListFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentStudentsListBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(this)[StudentsListViewModel::class.java]
-
-        // TODO: Integrate students in fragment ✅
-        // TODO: Refactor Model ✅
-        // TODO: Save new student ✅
-        // TODO: Reloading data list ✅
-
         binding?.recyclerView?.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(context)
         binding?.recyclerView?.layoutManager = layoutManager
 
-        adapter = StudentsRecyclerAdapter(viewModel?.students)
+        adapter = StudentsRecyclerAdapter(viewModel.students.value)
+
+        viewModel.students.observe(viewLifecycleOwner) {
+            adapter?.update(it)
+            adapter?.notifyDataSetChanged()
+
+            binding?.progressBar?.visibility = View.GONE
+        }
+
+        binding?.swipeToRefresh?.setOnRefreshListener {
+            viewModel.refreshAllStudents()
+        }
+
+        Model.shared.loadingState.observe(viewLifecycleOwner) { state ->
+            binding?.swipeToRefresh?.isRefreshing = state == Model.LoadingState.LOADING
+        }
+
         adapter?.listener = object : OnItemClickListener {
             override fun onItemClick(position: Int) {
                 Log.d("TAG", "On click Activity listener on position $position")
@@ -74,15 +85,7 @@ class StudentsListFragment : Fragment() {
     }
 
     private fun getAllStudents() {
-
         binding?.progressBar?.visibility = View.VISIBLE
-
-        Model.shared.getAllStudents {
-            viewModel?.students = it
-            adapter?.update(it)
-            adapter?.notifyDataSetChanged()
-
-            binding?.progressBar?.visibility = View.GONE
-        }
+        viewModel.refreshAllStudents()
     }
 }

@@ -11,6 +11,7 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="Add" />
     <item
+        android:id="@+id/blueFragment"
         android:icon="@drawable/avatar"
         android:title="Profile" />
 </menu>

@@ -9,48 +9,42 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.GridLayoutManager
+import com.idz.colman24class1.adapter.MoviesAdapter
+import com.idz.colman24class1.databinding.FragmentBlueBinding
+import com.idz.colman24class1.model.Movies
 
 class BlueFragment : Fragment() {
+    private val viewModel: BlueViewModel by viewModels()
+    private var _binding: FragmentBlueBinding? = null
+    private val binding get() = _binding
+    private var adapter: MoviesAdapter? = null
 
-    var textView: TextView? = null
-    var title: String? = null
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        title = arguments?.let { BlueFragmentArgs.fromBundle(it).studentTitle }
-//        arguments?.let {
-//            title = it.getString("studentTitle")
-//        }
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_blue, container, false)
+        _binding = FragmentBlueBinding.inflate(inflater, container, false)
 
-        textView = view.findViewById(R.id.blue_fragment_text_view)
-        textView?.text = title
+        binding?.recyclerView?.setHasFixedSize(true)
+        binding?.recyclerView?.layoutManager = GridLayoutManager(context, 3)
 
-        view?.findViewById<Button>(R.id.blue_fragment_back_button)?.setOnClickListener {
-            Navigation.findNavController(view).popBackStack()
+        adapter = MoviesAdapter(null)
+        binding?.recyclerView?.adapter = adapter
+
+        viewModel.fetchMovies()
+        viewModel.movies.observe(viewLifecycleOwner) {
+            adapter?.movies = it
+            adapter?.notifyDataSetChanged()
         }
-        return view
+
+        return _binding?.root
     }
 
-    companion object {
-
-        const val TITLE = "TITLE"
-
-        fun newInstance(title: String): BlueFragment {
-            return BlueFragment().apply {
-                arguments = Bundle().apply {
-                    putString(TITLE, title)
-                }
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
